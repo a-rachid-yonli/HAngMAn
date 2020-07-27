@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <title>HangMan</title>
+</head>
+<style>
+    .row {
+        background-color: burlywood;
+    }
+    
+    body {
+        background-color: burlywood;
+        font-family: fantasy;
+        width: 50%;
+        margin: auto;
+        height: 100%;
+    }
+    
+    .jumbotron,
+    .card {
+        height: 500px;
+        background: linear-gradient(to right, rgb(53, 49, 49), rgb(37, 2, 17));
+    }
+    
+    .notice {
+        text-align: center;
+        position: relative;
+        font-size: 2rem;
+    }
+    
+    #btn {
+        display: flex;
+        justify-content: center;
+    }
+    
+    h5,
+    h1 {
+        background-color: rgb(161, 228, 233);
+        text-align: center;
+    }
+    
+    .president_name {
+        text-decoration: underline;
+    }
+    
+    .btn-secondary {
+        background: linear-gradient(to right, rgb(53, 49, 49), rgb(37, 2, 17))!important;
+        color: grey;
+        outline-style: none;
+    }
+    
+    .text-dark {
+        color: grey!important;
+    }
+</style>
+
+<body>
+    <div class="notice">
+        <p><em>press any alphabet letter bellow to guess the word and but make sure to not HANG our MAN</em></p>
+    </div>
+    <div class="notice">
+        <p class="president_name">Guest Africa's country name</p>
+    </div>
+    <div class="notice">
+        <p class="spotlight">>>type the name on the physical keyboard not on the virtual keyboard
+        </p>
+    </div>
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="jumbotron">
+                    <div class="card">
+                        <div class="card-header">
+                            <h1 class="result">Result</h1>
+                            <h5 class="press_to_replay"> press any key to replay</h5>
+                        </div>
+                        <div class="card-body">
+                            <img id="hangManPic" src="hangImage/0.png" alt="..." class="img-thumbnail">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="jumbotron">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="press_to_start mt-5 ">Press A-Z to start playing</h5>
+                            <h5 class="wrongGuesses">wrongGuesses:<span id="mistakes">0</span> of <span id="maxWrong"></span></h5>
+                            <h5 class="num_word">word</h5>
+                            <h5 class="num_luck">5</h5>
+                            <h5 class="lettres"></h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div id="btn"> <button type="button" onClick="reset()" class="btn text-dark btn-lg reset mt-5 btn-danger">Reset</button></div>
+    <div id="keyword"></div>
+    <script>
+        /*DOM elements*/
+        /* var & const*/
+        const names = ["rca",
+            "algerie",
+            "angola",
+            "benin",
+            "botswana",
+            "burkina",
+            "burundi",
+            "cameroun",
+            "cap-Vert",
+            "rCA",
+            "comores",
+            "rdc",
+            "djibouti",
+            "egypte ",
+            "erythrée",
+            "ethiopie",
+            "Ggbon",
+            "gambie",
+            "ghana",
+            "guinéee",
+            "kenya",
+            "lesotho",
+            "liberiaa",
+            "libye", "madagascar",
+            "malawi",
+            "mali",
+            "maroc",
+            "maurice",
+            "mauritanie",
+            "mozambique",
+            "namibie",
+            "niger",
+            "nigeriaa",
+            "ouganda",
+            "rwandaa",
+            "senegal", "seychelles",
+            "somalie",
+            "soudan",
+            "swaziland",
+            "tanzaniee",
+            "tchad",
+            "togo",
+            "tunisie",
+            "zambie",
+            "zimbabwe"
+        ]
+        var answer = '';
+        var maxWrong = 6;
+        var mistakes = 0;
+        let guessed = [];
+        let wordStatus = null;
+
+        /* function*/
+        function randomWord() {
+            answer = names[Math.floor(Math.random() * names.length)];
+
+        };
+
+        function generateButtons() {
+            var buttonsHTML = 'abcdefghijklmnopqrstuvwxyz'.split('').map(letter => `
+            <button 
+                class="btn btn-lg btn-secondary m-2"
+                id='` + letter + `'
+                onclick="handleGuess('` + letter + `')"
+            >
+            ` + letter + `
+            </button>
+            `).join('');
+            document.getElementById('keyword').innerHTML = buttonsHTML;
+        }
+
+        function handleGuess(chosenLetter) {
+            console.log(chosenLetter.key)
+            guessed.indexOf(chosenLetter) === -1 ? guessed.push(chosenLetter) : null;
+            document.getElementById(chosenLetter).setAttribute('disabled', true);
+            if (answer.indexOf(chosenLetter) >= 0) {
+                guessedWord();
+                checkIfGameWon();
+            } else if (answer.indexOf(chosenLetter) === -1) {
+                mistakes++;
+                updadeMistakes();
+                checkIfGameLost();
+                updateHangManPicture();
+            }
+        }
+
+        function updateHangManPicture() {
+            document.getElementById('hangManPic').src = './hangImage/' + mistakes + '.png'
+        }
+
+        function checkIfGameWon() {
+            if (wordStatus === answer) {
+                document.querySelector('.result').innerHTML = 'bravo!'
+            }
+        }
+
+        function checkIfGameLost() {
+            if (mistakes === maxWrong) {
+                document.querySelector('.lettres').innerHTML = 'the word is ' + answer;
+                document.querySelector('.result').innerHTML = 'looser!!!'
+            }
+        }
+
+        function reset() {
+            mistakes = 0;
+            guessed = [];
+            document.getElementById('hangManPic').src = './hangImage/0.png';
+            randomWord();
+            guessedWord();
+            updadeMistakes();
+            generateButtons();
+        }
+
+
+        function updadeMistakes() {
+            document.getElementById('mistakes').innerHTML = mistakes;
+        }
+
+        function guessedWord() {
+            wordStatus = answer.split('').map(letter => (guessed.indexOf(letter) >= 0 ? letter : " _ ")).join('');
+
+            document.querySelector('.lettres').innerHTML = wordStatus;
+
+        }
+        /*/////////////////////*/
+        document.getElementById('maxWrong').innerHTML = maxWrong;
+        window.addEventListener("keypress", handleGuess, true)
+
+        /*/////////////////////*/
+        /*running function*/
+        randomWord();
+        generateButtons();
+        guessedWord();
+    </script>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+</body>
+
+</html>
