@@ -202,12 +202,14 @@
 
         function checkIfGameWon() {
             if (wordStatus === answer) {
+                 document.getElementById('keyword').innerHTML ="";
                 document.querySelector('.result').innerHTML = 'bravo!'
             }
         }
 
         function checkIfGameLost() {
             if (mistakes === maxWrong) {
+                 document.getElementById('keyword').innerHTML ="";
                 document.querySelector('.lettres').innerHTML = 'the word is ' + answer;
                 document.querySelector('.result').innerHTML = 'looser!!!'
             }
